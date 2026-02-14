@@ -2,7 +2,9 @@ const MAX_ASSISTANT_NAME = 50;
 const MAX_ASSISTANT_AVATAR = 200;
 
 export const DEFAULT_ASSISTANT_NAME = "Assistant";
-export const DEFAULT_ASSISTANT_AVATAR = "A";
+// Default avatar shown in the Control UI when no injected assistant avatar is provided.
+// Relative-root path served from ui/public.
+export const DEFAULT_ASSISTANT_AVATAR = "/calder-avatar.png";
 
 export type AssistantIdentity = {
   agentId?: string | null;
@@ -35,7 +37,7 @@ export function normalizeAssistantIdentity(
   input?: Partial<AssistantIdentity> | null,
 ): AssistantIdentity {
   const name = coerceIdentityValue(input?.name, MAX_ASSISTANT_NAME) ?? DEFAULT_ASSISTANT_NAME;
-  const avatar = coerceIdentityValue(input?.avatar ?? undefined, MAX_ASSISTANT_AVATAR) ?? null;
+  const avatar = coerceIdentityValue(input?.avatar ?? undefined, MAX_ASSISTANT_AVATAR) ?? DEFAULT_ASSISTANT_AVATAR;
   const agentId =
     typeof input?.agentId === "string" && input.agentId.trim() ? input.agentId.trim() : null;
   return { agentId, name, avatar };
