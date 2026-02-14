@@ -263,11 +263,51 @@ export function renderChat(props: ChatProps) {
     </div>
   `;
 
+  const statusChips = (() => {
+    const chips: Array<{ label: string; tone?: "good" | "warn" | "muted" }> = [];
+    chips.push({ label: props.connected ? "Connected" : "Disconnected", tone: props.connected ? "good" : "warn" });
+    if (props.sessionKey) {
+      const shortKey = props.sessionKey.length > 18
+        ? `${props.sessionKey.slice(0, 8)}…${props.sessionKey.slice(-6)}`
+        : props.sessionKey;
+      chips.push({ label: `Session ${shortKey}`, tone: "muted" });
+    }
+    if (props.thinkingLevel) {
+      chips.push({ label: `Thinking ${props.thinkingLevel}`, tone: "muted" });
+    }
+    if (showReasoning) {
+      chips.push({ label: "Reasoning shown", tone: "muted" });
+    }
+    if (props.sending) {
+      chips.push({ label: "Sending…", tone: "muted" });
+    }
+    if (props.stream !== null) {
+      chips.push({ label: "Streaming…", tone: "muted" });
+    }
+    if (props.queue.length) {
+      chips.push({ label: `Queue ${props.queue.length}`, tone: "muted" });
+    }
+    if ((props.attachments?.length ?? 0) > 0) {
+      chips.push({ label: `Attachments ${props.attachments!.length}`, tone: "muted" });
+    }
+    return chips;
+  })();
+
   return html`
     <section class="card chat">
       ${props.disabledReason ? html`<div class="callout">${props.disabledReason}</div>` : nothing}
 
       ${props.error ? html`<div class="callout danger">${props.error}</div>` : nothing}
+
+      <div class="chat-status" role="status" aria-live="polite">
+        ${statusChips.map(
+          (chip) => html`
+            <span class="chat-status__chip chat-status__chip--${chip.tone ?? "muted"}">
+              ${chip.label}
+            </span>
+          `,
+        )}
+      </div>
 
       ${
         props.focusMode
