@@ -2,7 +2,9 @@ const MAX_ASSISTANT_NAME = 50;
 const MAX_ASSISTANT_AVATAR = 200;
 
 export const DEFAULT_ASSISTANT_NAME = "Assistant";
-export const DEFAULT_ASSISTANT_AVATAR = "A";
+// Default avatar shown in the Control UI when no injected assistant avatar is provided.
+// Relative-root path served from ui/public.
+export const DEFAULT_ASSISTANT_AVATAR = "/calder-avatar.png";
 
 export type AssistantIdentity = {
   agentId?: string | null;
