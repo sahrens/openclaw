@@ -194,6 +194,22 @@ export function handleChatEvent(state: ChatState, payload?: ChatEventPayload) {
       }
     }
   } else if (payload.state === "final") {
+    // Avoid a brief "disappearing message" flicker:
+    // streaming text is rendered from chatStream, but the final message content
+    // only shows up after chat.history refresh completes.
+    // If the final payload includes the message, append it immediately.
+    if (payload.message) {
+      state.chatMessages = [
+        ...state.chatMessages,
+        {
+          role: "assistant",
+          content: Array.isArray((payload.message as any)?.content)
+            ? (payload.message as any).content
+            : [{ type: "text", text: extractText(payload.message) ?? "" }],
+          timestamp: Date.now(),
+        },
+      ];
+    }
     state.chatStream = null;
     state.chatRunId = null;
     state.chatStreamStartedAt = null;
