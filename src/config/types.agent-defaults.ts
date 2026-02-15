@@ -137,6 +137,8 @@ export type AgentDefaultsConfig = {
   /** Vector memory search configuration (per-agent overrides supported). */
   memorySearch?: MemorySearchConfig;
   /** Default thinking level when no /think directive is present. */
+  /** When true, instruct the model to send a brief acknowledgement before multi-step work. */
+  quickAck?: boolean;
   thinkingDefault?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
   /** Default verbose level when no /verbose directive is present. */
   verboseDefault?: "off" | "on" | "full";
