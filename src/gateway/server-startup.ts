@@ -16,6 +16,7 @@ import {
 } from "../hooks/internal-hooks.js";
 import { loadInternalHooks } from "../hooks/loader.js";
 import { isTruthyEnvValue } from "../infra/env.js";
+import { startWatcherManager, type WatcherManagerHandle } from "../infra/watcher-manager.js";
 import { type PluginServicesHandle, startPluginServices } from "../plugins/services.js";
 import { startBrowserControlServerIfEnabled } from "./server-browser.js";
 import {
@@ -98,6 +99,21 @@ export async function startGatewaySidecars(params: {
     }
   }
 
+  // Start external watchers if configured (agents.defaults.watchers).
+  let watcherManager: WatcherManagerHandle | null = null;
+  try {
+    watcherManager = startWatcherManager({
+      cfg: params.cfg,
+      workspaceDir: params.defaultWorkspaceDir,
+    });
+    const running = watcherManager.getRunningWatchers();
+    if (running.length > 0) {
+      params.logHooks.info(`started ${running.length} external watcher(s): ${running.join(", ")}`);
+    }
+  } catch (err) {
+    params.logHooks.error(`external watchers failed to start: ${String(err)}`);
+  }
+
   // Load internal hook handlers from configuration and directory discovery.
   try {
     // Clear any previously registered hooks to ensure fresh loading
@@ -161,5 +177,5 @@ export async function startGatewaySidecars(params: {
     }, 750);
   }
 
-  return { browserControl, pluginServices };
+  return { browserControl, pluginServices, watcherManager };
 }

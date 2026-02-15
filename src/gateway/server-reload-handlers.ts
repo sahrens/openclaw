@@ -1,6 +1,7 @@
 import type { CliDeps } from "../cli/deps.js";
 import type { loadConfig } from "../config/config.js";
 import type { HeartbeatRunner } from "../infra/heartbeat-runner.js";
+import type { WatcherManagerHandle } from "../infra/watcher-manager.js";
 import type { ChannelKind, GatewayReloadPlan } from "./config-reload.js";
 import { getActiveEmbeddedRunCount } from "../agents/pi-embedded-runner/runs.js";
 import { getTotalPendingReplies } from "../auto-reply/reply/dispatcher-registry.js";
@@ -24,6 +25,7 @@ type GatewayHotReloadState = {
   heartbeatRunner: HeartbeatRunner;
   cronState: GatewayCronState;
   browserControl: Awaited<ReturnType<typeof startBrowserControlServerIfEnabled>> | null;
+  watcherManager: WatcherManagerHandle | null;
 };
 
 export function createGatewayReloadHandlers(params: {
@@ -108,6 +110,11 @@ export function createGatewayReloadHandlers(params: {
       } else {
         params.logHooks.info("skipping gmail watcher restart (OPENCLAW_SKIP_GMAIL_WATCHER=1)");
       }
+    }
+
+    if (plan.restartWatchers && state.watcherManager) {
+      state.watcherManager.updateConfig(nextConfig);
+      params.logHooks.info("external watchers reloaded");
     }
 
     if (plan.restartChannels.size > 0) {

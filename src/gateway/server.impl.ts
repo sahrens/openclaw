@@ -625,8 +625,9 @@ export async function startGatewayServer(
       });
 
   let browserControl: Awaited<ReturnType<typeof startBrowserControlServerIfEnabled>> = null;
+  let watcherManager: import("../infra/watcher-manager.js").WatcherManagerHandle | null = null;
   if (!minimalTestGateway) {
-    ({ browserControl, pluginServices } = await startGatewaySidecars({
+    ({ browserControl, pluginServices, watcherManager } = await startGatewaySidecars({
       cfg: cfgAtStart,
       pluginRegistry,
       defaultWorkspaceDir,
@@ -660,6 +661,7 @@ export async function startGatewayServer(
             heartbeatRunner,
             cronState,
             browserControl,
+            watcherManager,
           }),
           setState: (nextState) => {
             hooksConfig = nextState.hooksConfig;
@@ -668,6 +670,7 @@ export async function startGatewayServer(
             cron = cronState.cron;
             cronStorePath = cronState.storePath;
             browserControl = nextState.browserControl;
+            watcherManager = nextState.watcherManager;
           },
           startChannel,
           stopChannel,
@@ -712,6 +715,7 @@ export async function startGatewayServer(
     clients,
     configReloader,
     browserControl,
+    watcherManager,
     wss,
     httpServer,
     httpServers,

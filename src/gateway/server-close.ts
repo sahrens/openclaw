@@ -2,6 +2,7 @@ import type { Server as HttpServer } from "node:http";
 import type { WebSocketServer } from "ws";
 import type { CanvasHostHandler, CanvasHostServer } from "../canvas-host/server.js";
 import type { HeartbeatRunner } from "../infra/heartbeat-runner.js";
+import type { WatcherManagerHandle } from "../infra/watcher-manager.js";
 import type { PluginServicesHandle } from "../plugins/services.js";
 import { type ChannelId, listChannelPlugins } from "../channels/plugins/index.js";
 import { stopGmailWatcher } from "../hooks/gmail-watcher.js";
@@ -26,6 +27,7 @@ export function createGatewayCloseHandler(params: {
   clients: Set<{ socket: { close: (code: number, reason: string) => void } }>;
   configReloader: { stop: () => Promise<void> };
   browserControl: { stop: () => Promise<void> } | null;
+  watcherManager: WatcherManagerHandle | null;
   wss: WebSocketServer;
   httpServer: HttpServer;
   httpServers?: HttpServer[];
@@ -68,6 +70,9 @@ export function createGatewayCloseHandler(params: {
       await params.pluginServices.stop().catch(() => {});
     }
     await stopGmailWatcher();
+    if (params.watcherManager) {
+      await params.watcherManager.stop();
+    }
     params.cron.stop();
     params.heartbeatRunner.stop();
     for (const timer of params.nodePresenceTimers.values()) {
