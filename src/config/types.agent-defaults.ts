@@ -200,6 +200,12 @@ export type AgentDefaultsConfig = {
      */
     includeReasoning?: boolean;
   };
+  /**
+   * External watchers: lightweight background processes that poll external sources
+   * and trigger agent runs via `openclaw system event` when something needs attention.
+   * Watchers run without LLM involvement, saving costs compared to heartbeat-based polling.
+   */
+  watchers?: Record<string, WatcherConfig>;
   /** Max concurrent agent runs across all conversations. Default: 1 (sequential). */
   maxConcurrent?: number;
   /** Sub-agent defaults (spawned via sessions_spawn). */
@@ -247,6 +253,21 @@ export type AgentDefaultsConfig = {
     /** Auto-prune sandbox containers. */
     prune?: SandboxPruneSettings;
   };
+};
+
+export type WatcherConfig = {
+  /** Shell command to execute (runs as a long-lived process). */
+  command: string;
+  /** Polling interval in seconds (passed as WATCHER_INTERVAL_SECONDS env var). */
+  interval?: number;
+  /** Enable or disable this watcher (default: true). */
+  enabled?: boolean;
+  /** Optional working directory for the watcher process. */
+  cwd?: string;
+  /** Extra environment variables for the watcher process. */
+  env?: Record<string, string>;
+  /** Seconds to wait before restarting a crashed watcher (default: 5). */
+  restartDelaySeconds?: number;
 };
 
 export type AgentCompactionMode = "default" | "safeguard";
