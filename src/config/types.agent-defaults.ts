@@ -1,4 +1,5 @@
 import type { ChannelId } from "../channels/plugins/types.js";
+import type { ConstitutionConfig } from "../security/constitution.js";
 import type {
   BlockStreamingChunkConfig,
   BlockStreamingCoalesceConfig,
@@ -200,6 +201,12 @@ export type AgentDefaultsConfig = {
      */
     includeReasoning?: boolean;
   };
+  /**
+   * Constitution Guardian — deterministic (non-LLM) system prompt validation.
+   * Validates the system prompt against safety rules before each agent run.
+   * Default: enabled with action "block" and all default rules.
+   */
+  constitution?: Partial<ConstitutionConfig>;
   /** Max concurrent agent runs across all conversations. Default: 1 (sequential). */
   maxConcurrent?: number;
   /** Sub-agent defaults (spawned via sessions_spawn). */
