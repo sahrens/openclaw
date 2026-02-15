@@ -219,6 +219,8 @@ export function buildAgentSystemPrompt(params: {
     channel: string;
   };
   memoryCitationsMode?: MemoryCitationsMode;
+  /** When true, inject quick-ack guidance into the system prompt. */
+  quickAck?: boolean;
 }) {
   const coreToolSummaries: Record<string, string> = {
     read: "Read file contents",
@@ -429,6 +431,16 @@ export function buildAgentSystemPrompt(params: {
     "Keep narration brief and value-dense; avoid repeating obvious steps.",
     "Use plain human language for narration unless in a technical context.",
     "",
+    ...(params.quickAck
+      ? [
+          "## Quick Acknowledgement",
+          "When a message arrives and the response will take noticeable time (multi-step work, research, debugging, tool calls, cross-session lookups), send a brief acknowledgement first using the message tool before starting the work.",
+          'Keep it natural and contextual (e.g., "On it", "Checking...", "Let me look into that", "Give me a sec").',
+          "The ack and the real response must be separate messages.",
+          "Skip the ack for simple questions you can answer immediately.",
+          "",
+        ]
+      : []),
     ...safetySection,
     "## OpenClaw CLI Quick Reference",
     "OpenClaw is controlled via subcommands. Do not invent commands.",

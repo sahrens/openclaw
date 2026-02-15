@@ -470,6 +470,30 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("## Reactions");
     expect(prompt).toContain("Reactions are enabled for Telegram in MINIMAL mode.");
   });
+
+  it("includes quick ack section when quickAck is true", () => {
+    const prompt = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      quickAck: true,
+      toolNames: ["message"],
+    });
+
+    expect(prompt).toContain("## Quick Acknowledgement");
+    expect(prompt).toContain("send a brief acknowledgement first");
+  });
+
+  it("omits quick ack section when quickAck is false or unset", () => {
+    const promptDefault = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+    });
+    const promptFalse = buildAgentSystemPrompt({
+      workspaceDir: "/tmp/openclaw",
+      quickAck: false,
+    });
+
+    expect(promptDefault).not.toContain("## Quick Acknowledgement");
+    expect(promptFalse).not.toContain("## Quick Acknowledgement");
+  });
 });
 
 describe("buildSubagentSystemPrompt", () => {
