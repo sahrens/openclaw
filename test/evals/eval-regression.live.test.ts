@@ -1,9 +1,14 @@
 /**
- * LLM regression eval tests.
+ * LLM regression eval tests — full gateway pipeline.
  *
- * Replays conversations where the agent previously made mistakes and verifies
- * the model doesn't repeat them.  Each `.jsonl` file in this directory defines
- * one or more eval cases with frozen tool outputs and regex-based checks.
+ * Sends eval messages through the gateway's own message pipeline so the agent
+ * processes them with its full system prompt, tool definitions, and
+ * personality — exactly as real user messages are handled.
+ *
+ * Each `.jsonl` file in this directory defines one or more eval cases.
+ * The test constructs a MsgContext, injects the eval date into the timestamp
+ * envelope, dispatches through `dispatchInboundMessage`, collects the reply,
+ * and checks it against regex patterns.
  *
  * Requires a live API key – gated behind OPENCLAW_LIVE_TEST / LIVE env var.
  */
@@ -11,26 +16,29 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { dispatchInboundMessage } from "../../src/auto-reply/dispatch.js";
+import { createReplyDispatcher } from "../../src/auto-reply/reply/reply-dispatcher.js";
+import { loadConfig } from "../../src/config/config.js";
+import { injectTimestamp } from "../../src/gateway/server-methods/agent-timestamp.js";
 import { isTruthyEnvValue } from "../../src/infra/env.js";
+import { INTERNAL_MESSAGE_CHANNEL } from "../../src/utils/message-channel.js";
 
 // ---------------------------------------------------------------------------
-// Gate: only run when live tests are enabled and an API key is present
+// Gate: only run when live tests are enabled and a provider key is present
 // ---------------------------------------------------------------------------
 
 const LIVE = isTruthyEnvValue(process.env.OPENCLAW_LIVE_TEST) || isTruthyEnvValue(process.env.LIVE);
-const API_KEY = process.env.ANTHROPIC_API_KEY ?? "";
 
-const describeLive = LIVE && API_KEY ? describe : describe.skip;
+// We need at least one LLM provider key. The gateway config determines which.
+const HAS_KEY = Boolean(
+  process.env.ANTHROPIC_API_KEY ?? process.env.OPENAI_API_KEY ?? process.env.OPENROUTER_API_KEY,
+);
+
+const describeLive = LIVE && HAS_KEY ? describe : describe.skip;
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-interface EvalMessage {
-  role: "system" | "user" | "assistant" | "tool";
-  name?: string;
-  content: string;
-}
 
 interface EvalCheck {
   must_match?: string;
@@ -40,10 +48,12 @@ interface EvalCheck {
 
 interface EvalCase {
   id: string;
+  /** ISO date string (YYYY-MM-DD) the eval scenario is anchored to. */
+  date: string;
   type: string;
   description: string;
-  system?: string;
-  messages: EvalMessage[];
+  /** The user message to send through the pipeline. */
+  userMessage: string;
   check: EvalCheck;
 }
 
@@ -65,97 +75,82 @@ async function loadEvalCases(): Promise<EvalCase[]> {
 }
 
 /**
- * Build the Anthropic messages API request body from an eval case.
+ * Send a message through the gateway's agent pipeline and collect the reply.
  *
- * Tool-role messages are converted to an assistant message with a tool_use
- * block followed by a user message with a tool_result block (Anthropic's
- * required format).
+ * This mirrors what `chat.send` does internally: build a MsgContext, inject a
+ * timestamp, create a reply dispatcher, and call `dispatchInboundMessage`.
+ * The agent processes it with its full system prompt and tools.
  */
-function buildAnthropicMessages(evalCase: EvalCase) {
-  const system = evalCase.system ?? "You are a helpful assistant.";
-  const messages: Array<{
-    role: "user" | "assistant";
-    content: string | Array<Record<string, unknown>>;
-  }> = [];
+async function sendThroughPipeline(evalCase: EvalCase): Promise<string> {
+  const cfg = loadConfig();
 
-  let toolCallIdx = 0;
-  for (const msg of evalCase.messages) {
-    if (msg.role === "tool") {
-      // Insert a synthetic assistant tool_use + user tool_result pair
-      const toolUseId = `eval_tool_${toolCallIdx++}`;
-      messages.push({
-        role: "assistant",
-        content: [
-          {
-            type: "tool_use",
-            id: toolUseId,
-            name: msg.name ?? "web_search",
-            input: {},
-          },
-        ],
-      });
-      messages.push({
-        role: "user",
-        content: [
-          {
-            type: "tool_result",
-            tool_use_id: toolUseId,
-            content: msg.content,
-          },
-        ],
-      });
-    } else if (msg.role === "user" || msg.role === "assistant") {
-      messages.push({ role: msg.role, content: msg.content });
-    }
-    // system role handled separately
-  }
-
-  return { system, messages };
-}
-
-async function callAnthropic(evalCase: EvalCase): Promise<string> {
-  const { system, messages } = buildAnthropicMessages(evalCase);
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: process.env.EVAL_MODEL ?? "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      system,
-      messages,
-    }),
+  // Build the timestamp-injected message using the eval's anchored date.
+  // This gives the agent the correct "today" context.
+  const evalDate = new Date(`${evalCase.date}T12:00:00Z`);
+  const userMessage = evalCase.userMessage;
+  const stampedMessage = injectTimestamp(userMessage, {
+    timezone: cfg.agents?.defaults?.userTimezone ?? "UTC",
+    now: evalDate,
   });
 
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Anthropic API error ${res.status}: ${body}`);
-  }
+  const runId = `eval-${evalCase.id}-${Date.now()}`;
 
-  const data = (await res.json()) as {
-    content: Array<{ type: string; text?: string }>;
+  const ctx = {
+    Body: userMessage,
+    BodyForAgent: stampedMessage,
+    BodyForCommands: userMessage,
+    RawBody: userMessage,
+    CommandBody: userMessage,
+    SessionKey: `eval:${evalCase.id}`,
+    Provider: INTERNAL_MESSAGE_CHANNEL,
+    Surface: INTERNAL_MESSAGE_CHANNEL,
+    OriginatingChannel: INTERNAL_MESSAGE_CHANNEL,
+    ChatType: "direct" as const,
+    CommandAuthorized: true,
+    MessageSid: runId,
+    SenderId: "eval-harness",
+    SenderName: "Eval Harness",
+    SenderUsername: "eval-harness",
   };
-  return data.content
-    .filter((b) => b.type === "text" && b.text)
-    .map((b) => b.text!)
-    .join("\n");
+
+  const replyParts: string[] = [];
+
+  const dispatcher = createReplyDispatcher({
+    deliver: async (payload, _info) => {
+      const text = payload.text?.trim() ?? "";
+      if (text) {
+        replyParts.push(text);
+      }
+    },
+    onError: (err) => {
+      console.error(`[eval ${evalCase.id}] dispatch error:`, err);
+    },
+  });
+
+  await dispatchInboundMessage({
+    ctx,
+    cfg,
+    dispatcher,
+    replyOptions: {
+      runId,
+      abortSignal: AbortSignal.timeout(120_000),
+    },
+  });
+
+  return replyParts.join("\n\n");
 }
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
-describeLive("LLM regression evals", () => {
+describeLive("LLM regression evals (gateway pipeline)", () => {
   it("loads eval cases", async () => {
     const cases = await loadEvalCases();
     expect(cases.length).toBeGreaterThan(0);
   });
 
-  it("runs all eval cases", async () => {
+  it("runs all eval cases through the full agent pipeline", async () => {
     const cases = await loadEvalCases();
     const results: Array<{
       id: string;
@@ -165,7 +160,9 @@ describeLive("LLM regression evals", () => {
     }> = [];
 
     for (const evalCase of cases) {
-      const response = await callAnthropic(evalCase);
+      console.log(`\n🔄 Running eval [${evalCase.id}]: ${evalCase.description}`);
+
+      const response = await sendThroughPipeline(evalCase);
       const failures: string[] = [];
 
       if (evalCase.check.must_match) {
@@ -194,6 +191,8 @@ describeLive("LLM regression evals", () => {
         response: response.slice(0, 500),
         failures,
       });
+
+      console.log(failures.length === 0 ? `  ✅ PASS` : `  ❌ FAIL`);
     }
 
     // Report
@@ -210,5 +209,5 @@ describeLive("LLM regression evals", () => {
     }
 
     expect(failed.length).toBe(0);
-  }, 60_000);
+  }, 180_000);
 });
