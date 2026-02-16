@@ -1,0 +1,283 @@
+{
+  "timestamp": "2026-02-16T06:02:36.726Z",
+  "train": {
+    "successRate": 0.16666666666666666,
+    "efficiency": 0.6799999999999999,
+    "score": 0.13999999999999999,
+    "total": 30,
+    "solved": 5,
+    "perEnv": {
+      "pattern_fill": {
+        "successRate": 0,
+        "efficiency": 0,
+        "score": 0,
+        "total": 5,
+        "solved": 0,
+        "episodes": [
+          {
+            "envId": "pattern_fill",
+            "seed": 1,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "pattern_fill",
+            "seed": 2,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "pattern_fill",
+            "seed": 3,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "pattern_fill",
+            "seed": 4,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "pattern_fill",
+            "seed": 5,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          }
+        ]
+      },
+      "path_find": {
+        "successRate": 1,
+        "efficiency": 0.6799999999999999,
+        "score": 0.84,
+        "total": 5,
+        "solved": 5,
+        "episodes": [
+          {
+            "envId": "path_find",
+            "seed": 1,
+            "success": true,
+            "steps": 2,
+            "maxSteps": 15
+          },
+          {
+            "envId": "path_find",
+            "seed": 2,
+            "success": true,
+            "steps": 8,
+            "maxSteps": 15
+          },
+          {
+            "envId": "path_find",
+            "seed": 3,
+            "success": true,
+            "steps": 7,
+            "maxSteps": 15
+          },
+          {
+            "envId": "path_find",
+            "seed": 4,
+            "success": true,
+            "steps": 5,
+            "maxSteps": 15
+          },
+          {
+            "envId": "path_find",
+            "seed": 5,
+            "success": true,
+            "steps": 2,
+            "maxSteps": 15
+          }
+        ]
+      },
+      "color_sort": {
+        "successRate": 0,
+        "efficiency": 0,
+        "score": 0,
+        "total": 5,
+        "solved": 0,
+        "episodes": [
+          {
+            "envId": "color_sort",
+            "seed": 1,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_sort",
+            "seed": 2,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_sort",
+            "seed": 3,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_sort",
+            "seed": 4,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_sort",
+            "seed": 5,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          }
+        ]
+      },
+      "mirror": {
+        "successRate": 0,
+        "efficiency": 0,
+        "score": 0,
+        "total": 5,
+        "solved": 0,
+        "episodes": [
+          {
+            "envId": "mirror",
+            "seed": 1,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "mirror",
+            "seed": 2,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "mirror",
+            "seed": 3,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "mirror",
+            "seed": 4,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "mirror",
+            "seed": 5,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          }
+        ]
+      },
+      "flood_fill": {
+        "successRate": 0,
+        "efficiency": 0,
+        "score": 0,
+        "total": 5,
+        "solved": 0,
+        "episodes": [
+          {
+            "envId": "flood_fill",
+            "seed": 1,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "flood_fill",
+            "seed": 2,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "flood_fill",
+            "seed": 3,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "flood_fill",
+            "seed": 4,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "flood_fill",
+            "seed": 5,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          }
+        ]
+      },
+      "color_map": {
+        "successRate": 0,
+        "efficiency": 0,
+        "score": 0,
+        "total": 5,
+        "solved": 0,
+        "episodes": [
+          {
+            "envId": "color_map",
+            "seed": 1,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_map",
+            "seed": 2,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_map",
+            "seed": 3,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_map",
+            "seed": 4,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          },
+          {
+            "envId": "color_map",
+            "seed": 5,
+            "success": false,
+            "steps": 15,
+            "maxSteps": 15
+          }
+        ]
+      }
+    }
+  },
+  "eval": {
+    "successRate": 0.05555555555555555,
+    "efficiency": 0.7333333333333333,
+    "score": 0.04814814814814815,
+    "total": 18,
+    "solved": 1
+  }
+}
