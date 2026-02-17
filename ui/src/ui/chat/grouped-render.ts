@@ -55,6 +55,44 @@ function extractImages(message: unknown): ImageBlock[] {
   return images;
 }
 
+// Known media root prefix used by the gateway's media directory.
+const OPENCLAW_MEDIA_DIR = "/.openclaw/media/";
+const MEDIA_TOKEN_RE = /^MEDIA:\s*(.+)$/gm;
+const IMAGE_EXTS = /\.(png|jpe?g|gif|webp|svg)$/i;
+
+/**
+ * Extract MEDIA: tokens from message text, strip them, and convert local
+ * filesystem paths to `/api/media/` URLs that the gateway can serve.
+ */
+function extractMediaTokens(text: string): { text: string; mediaImages: ImageBlock[] } {
+  if (!text.includes("MEDIA:")) {
+    return { text, mediaImages: [] };
+  }
+  const mediaImages: ImageBlock[] = [];
+  const cleaned = text.replace(MEDIA_TOKEN_RE, (_match, rawPath: string) => {
+    const trimmed = rawPath.trim().replace(/^`|`$/g, "");
+    let url: string | null = null;
+
+    // Convert local paths containing /.openclaw/media/ to /api/media/ URLs
+    const mediaIdx = trimmed.indexOf(OPENCLAW_MEDIA_DIR);
+    if (mediaIdx >= 0) {
+      const relPath = trimmed.slice(mediaIdx + OPENCLAW_MEDIA_DIR.length);
+      url = `/api/media/${relPath}`;
+    } else if (/^https?:\/\//i.test(trimmed)) {
+      url = trimmed;
+    } else if (trimmed.startsWith("/api/media/")) {
+      url = trimmed;
+    }
+
+    if (url && IMAGE_EXTS.test(url)) {
+      mediaImages.push({ url });
+    }
+    // Strip the MEDIA: line from displayed text regardless
+    return "";
+  });
+  return { text: cleaned.trim(), mediaImages };
+}
+
 export function renderReadingIndicatorGroup(assistant?: AssistantIdentity) {
   return html`
     <div class="chat-group assistant">
@@ -238,9 +276,13 @@ function renderGroupedMessage(
   const extractedText = extractTextCached(message);
   const extractedThinking =
     opts.showReasoning && role === "assistant" ? extractThinkingCached(message) : null;
-  const markdownBase = extractedText?.trim() ? extractedText : null;
+  // Extract MEDIA: tokens from text and convert local paths to servable URLs.
+  const { text: textWithoutMedia, mediaImages } = extractMediaTokens(extractedText?.trim() ?? "");
+  const markdownBase = textWithoutMedia ? textWithoutMedia : null;
   const reasoningMarkdown = extractedThinking ? formatReasoningMarkdown(extractedThinking) : null;
   const markdown = markdownBase;
+  // Merge MEDIA:-extracted images with content-block images
+  const allImages = [...images, ...mediaImages];
   const canCopyMarkdown = role === "assistant" && Boolean(markdown?.trim());
 
   const bubbleClasses = [
@@ -252,18 +294,20 @@ function renderGroupedMessage(
     .filter(Boolean)
     .join(" ");
 
+  const hasAnyImages = allImages.length > 0;
+
   if (!markdown && hasToolCards && isToolResult) {
     return html`${toolCards.map((card) => renderToolCardSidebar(card, onOpenSidebar))}`;
   }
 
-  if (!markdown && !hasToolCards && !hasImages) {
+  if (!markdown && !hasToolCards && !hasAnyImages) {
     return nothing;
   }
 
   return html`
     <div class="${bubbleClasses}">
       ${canCopyMarkdown ? renderCopyAsMarkdownButton(markdown!) : nothing}
-      ${renderMessageImages(images)}
+      ${renderMessageImages(allImages)}
       ${
         reasoningMarkdown
           ? html`<div class="chat-thinking">${unsafeHTML(

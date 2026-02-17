@@ -27,6 +27,7 @@ import {
   type GatewayAuthResult,
   type ResolvedGatewayAuth,
 } from "./auth.js";
+import { handleMediaRequest } from "./control-ui-media.js";
 import {
   handleControlUiAvatarRequest,
   handleControlUiHttpRequest,
@@ -563,6 +564,10 @@ export function createGatewayHttpServer(opts: {
         if (await canvasHost.handleHttpRequest(req, res)) {
           return;
         }
+      }
+      // Serve local media files (screenshots, images, TTS audio) at /api/media/
+      if (handleMediaRequest(req, res, { basePath: controlUiBasePath })) {
+        return;
       }
       if (controlUiEnabled) {
         if (
