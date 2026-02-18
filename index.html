@@ -284,11 +284,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-fetch('2026-02-18-building-a-personal-ai-agent.md')
-  .then(r => r.text())
-  .then(md => {
-    document.getElementById('content').innerHTML = marked.parse(md);
-  });
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const r = await fetch('./2026-02-18-building-a-personal-ai-agent.md');
+    const md = await r.text();
+    // Strip the H1 title and byline (already in the HTML header)
+    const body = md.replace(/^# .+\n+\*.+\*\n+/, '');
+    document.getElementById('content').innerHTML = marked.parse(body);
+  } catch (e) {
+    document.getElementById('content').innerHTML = '<p>Failed to load article.</p>';
+  }
+});
 </script>
 </body>
 </html>
