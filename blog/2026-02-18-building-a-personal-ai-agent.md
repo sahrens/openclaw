@@ -26,10 +26,10 @@ I told it to be "helpful, concise but funny and witty" — but how it interprete
 - **Gmail account**: Calder got its own email, configured 2FA, set up SMTP sending and IMAP monitoring
 - **Mail watcher**: A shell script polling IMAP every 60 seconds, creating a trigger file when new mail arrives. The heartbeat picks it up and delivers summaries to me via Telegram. Zero LLM cost when there's no mail.
 - **5 pull requests to OpenClaw itself** — not toy PRs, real improvements born from using the product:
-  - **Autoscroll fix** (#1, #3): The chat UI would yank scroll position during streaming and flicker on the final message. Classic DOM measurement race condition — fixed with scroll targets and stable anchoring.
-  - **Custom avatar** (#5): OpenClaw's Control UI had a generic bot icon. Calder shipped support for a custom default assistant avatar so every deployment can have its own face.
-  - **Chat status strip** (#6): Added a connection/streaming/thinking indicator bar to the Control UI — you couldn't tell if the agent was working or dead.
-  - **Media rendering** (#8): MEDIA: image paths from tools (like TTS or image generation) weren't rendering inline in the chat. Fixed to display them properly.
+  - **Autoscroll fix** ([#1](https://github.com/sahrens/openclaw/pull/1), [#3](https://github.com/sahrens/openclaw/pull/3)): The chat UI would yank scroll position during streaming and flicker on the final message. Classic DOM measurement race condition — fixed with scroll targets and stable anchoring.
+  - **Custom avatar** ([#5](https://github.com/sahrens/openclaw/pull/5)): OpenClaw's Control UI had a generic bot icon. Calder shipped support for a custom default assistant avatar so every deployment can have its own face.
+  - **Chat status strip** ([#6](https://github.com/sahrens/openclaw/pull/6)): Added a connection/streaming/thinking indicator bar to the Control UI — you couldn't tell if the agent was working or dead.
+  - **Media rendering** ([#8](https://github.com/sahrens/openclaw/pull/8)): MEDIA: image paths from tools (like TTS or image generation) weren't rendering inline in the chat. Fixed to display them properly.
 - **Its own soul**: SOUL.md, IDENTITY.md, AGENTS.md — the files that define who Calder is and how it behaves. It wrote them, I edited a few adjectives, we called it "iteration."
 
 > **Lesson:** The agent performs dramatically better when it has a strong identity and behavioral guidelines. "Be autonomous, bias toward action, present solutions not questions" changed Calder from a menu-presenting chatbot into something that actually gets stuff done.
@@ -46,14 +46,14 @@ Day 2 was ambitious. I handed Calder a case file from my previous AI assistant a
 
 - **Cron jobs**: Birthday reminders for the kids (one week advance), daily AI safety news scans, local news digests — all set up as isolated background agent sessions.
 
-- **AI safety watchdog architecture**: Designed a 3-layer system and submitted it as three separate PRs (#11-#13):
-  - **Constitution guardian** (#11): Deterministic checks that can't be prompt-injected around — system prompt integrity validation, rate limits, config drift detection. No LLM needed, runs as a shell script.
-  - **External watcher manager** (#12): A process manager for independent watchdog processes that monitor the agent from outside the agent's own context.
-  - **Safety watchdog Phase 1** (#13): The full integration — tiered monitoring with cheap model scans, frontier model escalation, and a kill switch (`openclaw gateway stop`).
+- **AI safety watchdog architecture**: Designed a 3-layer system and submitted it as three separate PRs ([#11](https://github.com/sahrens/openclaw/pull/11)-[#13](https://github.com/sahrens/openclaw/pull/13)):
+  - **Constitution guardian** ([#11](https://github.com/sahrens/openclaw/pull/11)): Deterministic checks that can't be prompt-injected around — system prompt integrity validation, rate limits, config drift detection. No LLM needed, runs as a shell script.
+  - **External watcher manager** ([#12](https://github.com/sahrens/openclaw/pull/12)): A process manager for independent watchdog processes that monitor the agent from outside the agent's own context.
+  - **Safety watchdog Phase 1** ([#13](https://github.com/sahrens/openclaw/pull/13)): The full integration — tiered monitoring with cheap model scans, frontier model escalation, and a kill switch (`openclaw gateway stop`).
 
 - **Two quality-of-life PRs** born from daily use:
-  - **Block streaming** (#10): Text was arriving all at once after the model finished. Enabled progressive delivery so you see tokens as they arrive — feels dramatically more responsive.
-  - **Quick-ack config** (#9): When the agent gets a message and needs 30+ seconds to respond, silence feels broken. This injects guidance into the system prompt to send a quick "on it" via the messaging tool before doing long work.
+  - **Block streaming** ([#10](https://github.com/sahrens/openclaw/pull/10)): Text was arriving all at once after the model finished. Enabled progressive delivery so you see tokens as they arrive — feels dramatically more responsive.
+  - **Quick-ack config** ([#9](https://github.com/sahrens/openclaw/pull/9)): When the agent gets a message and needs 30+ seconds to respond, silence feels broken. This injects guidance into the system prompt to send a quick "on it" via the messaging tool before doing long work.
 
 ### What went catastrophically wrong
 
@@ -82,8 +82,8 @@ Each of these mistakes got documented in Calder's memory files with explicit rul
 With the explosive lessons behind us, Day 3 was about doing useful things without breaking other things.
 
 - **Error watchdog**: A shell script that scans logs for errors and alerts me in Telegram. Added to the heartbeat cycle.
-- **arc-bench** (PR #14): Built an ARC-AGI-3 style gridworld benchmark — 6 environment types, 48 levels, a pure JS agent, and an LLM eval harness. The idea: give agents standardized spatial reasoning puzzles so you can compare ability across models. Includes a harness that spawns OpenClaw sub-agents to solve levels and scores their performance.
-- **LLM regression eval framework** (PR #15): A structured eval system so OpenClaw developers can catch regressions when changing models or prompts. Born from Calder's own `evals.jsonl` pattern — every mistake gets logged as a test case.
+- **arc-bench** ([PR #14](https://github.com/sahrens/openclaw/pull/14)): Built an ARC-AGI-3 style gridworld benchmark — 6 environment types, 48 levels, a pure JS agent, and an LLM eval harness. The idea: give agents standardized spatial reasoning puzzles so you can compare ability across models. Includes a harness that spawns OpenClaw sub-agents to solve levels and scores their performance.
+- **LLM regression eval framework** ([PR #15](https://github.com/sahrens/openclaw/pull/15)): A structured eval system so OpenClaw developers can catch regressions when changing models or prompts. Born from Calder's own `evals.jsonl` pattern — every mistake gets logged as a test case.
 - **Cron delivery fixes**: Discovered that OpenClaw's "announce" delivery mode was stripping formatting and links from cron job output. Switched all jobs to direct Telegram sends for verbatim output.
 - **Contributor analysis**: Calder analyzed the entire OpenClaw commit history (~8,300 commits), mapped out key maintainers, PR culture, and merge patterns, then wrote an internal contributor guide to make future PRs more likely to get merged.
 
