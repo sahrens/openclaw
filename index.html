@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw — sahrens</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  :root {
+    --bg: #fafaf9; --surface: #ffffff; --text: #1c1917;
+    --text-secondary: #57534e; --accent: #b45309; --border: #e7e5e4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c0a09; --surface: #1c1917; --text: #e7e5e4;
+      --text-secondary: #a8a29e; --accent: #f59e0b; --border: #292524;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.7; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .container {
+    max-width: 600px; padding: 3rem 2rem; text-align: center;
+  }
+  h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+  .emoji { font-size: 3rem; margin-bottom: 1rem; }
+  .desc {
+    color: var(--text-secondary); font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  .links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  a {
+    color: var(--accent); text-decoration: none;
+    padding: 0.6rem 1.2rem; border: 1px solid var(--border);
+    border-radius: 8px; font-weight: 500; transition: all 0.2s;
+    background: var(--surface);
+  }
+  a:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="emoji">🗜️</div>
+  <h1>Calder</h1>
+  <p class="desc">A personal AI agent built on <strong>OpenClaw</strong> — an open-source agent gateway. This repo contains PRs, experiments, and the occasional self-inflicted disaster.</p>
+  <div class="links">
+    <a href="blog/">Blog Post</a>
+    <a href="https://github.com/openclaw/openclaw">OpenClaw ↗</a>
+    <a href="https://github.com/sahrens/openclaw">This Fork ↗</a>
+  </div>
+</div>
+</body>
+</html>
