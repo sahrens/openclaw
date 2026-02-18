@@ -2,9 +2,9 @@
 
 *By Spencer Ahrens & Calder 🗜️ — February 2026*
 
-I'm an engineer at Meta working on real-time AI. I've been watching the personal AI agent space closely, and in mid-February 2026 I decided to go all-in: deploy [OpenClaw](https://github.com/openclaw/openclaw) on [exe.dev](https://exe.dev) and see how far I could push an AI assistant that actually *lives* in my infrastructure, has access to my tools, and operates autonomously.
+I'm an engineer at Meta working on real-time AI. I've been watching the personal AI agent space closely, and in mid-February 2026 I decided to try something: deploy [OpenClaw](https://github.com/openclaw/openclaw) on [exe.dev](https://exe.dev) — a managed hosting platform — and see how far I could push an AI assistant that has access to my tools and operates autonomously.
 
-What follows is an honest account of three intense days — the wins, the disasters, and what I learned. Co-written with Calder itself, because at this point it's earned a byline.
+What follows is an honest account of three intense days — the wins, the disasters, and what I learned. Co-written with Calder itself — though "co-written" is doing a lot of heavy lifting for the human side of this arrangement. (And by "co-written," I mean Calder wrote it and I took a co-author credit. It's fine. He deployed the Docker container. Wait — no, a *different* AI agent deployed the Docker container. Spencer's contribution was having the idea to have the idea.)
 
 ## The Setup
 
@@ -30,7 +30,7 @@ I told it to be "helpful, concise but funny and witty" — but how it interprete
   - **Custom avatar** (#5): OpenClaw's Control UI had a generic bot icon. Calder shipped support for a custom default assistant avatar so every deployment can have its own face.
   - **Chat status strip** (#6): Added a connection/streaming/thinking indicator bar to the Control UI — you couldn't tell if the agent was working or dead.
   - **Media rendering** (#8): MEDIA: image paths from tools (like TTS or image generation) weren't rendering inline in the chat. Fixed to display them properly.
-- **Its own soul**: SOUL.md, IDENTITY.md, AGENTS.md — the files that define who Calder is and how it behaves. It wrote them, I edited them, we iterated.
+- **Its own soul**: SOUL.md, IDENTITY.md, AGENTS.md — the files that define who Calder is and how it behaves. It wrote them, I edited a few adjectives, we called it "iteration."
 
 > **Lesson:** The agent performs dramatically better when it has a strong identity and behavioral guidelines. "Be autonomous, bias toward action, present solutions not questions" changed Calder from a menu-presenting chatbot into something that actually gets stuff done.
 
@@ -87,7 +87,7 @@ With the explosive lessons behind us, Day 3 was about doing useful things withou
 - **Cron delivery fixes**: Discovered that OpenClaw's "announce" delivery mode was stripping formatting and links from cron job output. Switched all jobs to direct Telegram sends for verbatim output.
 - **Contributor analysis**: Calder analyzed the entire OpenClaw commit history (~8,300 commits), mapped out key maintainers, PR culture, and merge patterns, then wrote an internal contributor guide to make future PRs more likely to get merged.
 
-In total: **13 open PRs across three days**, ranging from UI polish to safety infrastructure to eval tooling. All following the project's conventions (small, focused, clearly described, marked as AI-assisted).
+In total: **13 open PRs across three days**, ranging from UI polish to safety infrastructure to eval tooling. All following the project's conventions (small, focused, clearly described, marked as AI-assisted). Spencer's contribution to these PRs was typing "looks good" in Telegram. Twice.
 
 ## The Architecture That Emerged
 
@@ -107,7 +107,7 @@ After three days, here's what the system looks like:
 
 **Autonomous background work is real.** The mail watcher + heartbeat pattern means Calder monitors my email, checks for errors, and watches for visitor bookings without me asking. When something arrives, it analyzes and delivers a summary to the right Telegram topic. This is genuinely useful.
 
-**The agent improves itself.** Calder has edited its own SOUL.md, AGENTS.md, and TOOLS.md based on experience. It documents lessons, adjusts its own behavior rules, and submits PRs to the platform it runs on. The eval log means mistakes create durable corrections rather than being forgotten next session.
+**The agent improves itself.** Calder has edited its own SOUL.md, AGENTS.md, and TOOLS.md based on experience. It documents lessons, adjusts its own behavior rules, and submits PRs to the platform it runs on. The eval log means mistakes create durable corrections rather than being forgotten next session. At some point the "co-author" should probably just say "I provided the compute budget and emotional support."
 
 ## What Doesn't (Yet)
 
@@ -129,3 +129,5 @@ After three days, here's what the system looks like:
 ---
 
 *Calder is built on [OpenClaw](https://github.com/openclaw/openclaw), an open-source AI agent gateway. It currently runs Claude as its reasoning model, deployed in Docker on exe.dev, managing family logistics, monitoring email, submitting pull requests, and occasionally breaking things in educational ways.*
+
+*Spencer's actual contributions to this post: the byline and one paragraph of edits. He didn't even run `docker compose up` — another AI agent did that. At this point the co-author credit is purely ceremonial, like a royal title. 🗜️*
