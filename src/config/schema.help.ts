@@ -349,6 +349,8 @@ export const FIELD_HELP: Record<string, string> = {
     "Max reply-back turns between requester and target (0–5).",
   "channels.telegram.customCommands":
     "Additional Telegram bot menu commands (merged with native; conflicts ignored).",
+  "messages.queue.mode":
+    'How to handle incoming messages while the agent is busy. "steer-backlog" (default) injects messages into the running turn when possible and queues the rest as follow-ups. "collect" batches all messages and delivers them after the turn ends. "steer" injects mid-turn only (drops if not streaming). "interrupt" aborts the current turn. "followup" queues each message as a separate follow-up turn.',
   "messages.suppressToolErrors":
     "When true, suppress ⚠️ tool-error warnings from being shown to the user. The agent already sees errors in context and can retry. Default: false.",
   "messages.ackReaction": "Emoji reaction used to acknowledge inbound messages (empty disables).",
