@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come Visit Us in Provence! 🌿</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --warm: #faf6f0;
+    --sand: #e8ddd0;
+    --lavender: #8b6fae;
+    --lavender-light: #c4b1d9;
+    --olive: #6b7c4e;
+    --olive-dark: #4a5a33;
+    --terracotta: #c4704b;
+    --golden: #d4a843;
+    --text: #3b3228;
+    --text-light: #7a6e62;
+    --white: #fffcf8;
+    --taken: #e2cfe8;
+    --available: #dce8cd;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--warm);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, var(--olive-dark) 0%, var(--olive) 40%, var(--lavender) 100%);
+    color: var(--white);
+    text-align: center;
+    padding: 4rem 1.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '🌿';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.1;
+    top: -1rem; left: -1rem;
+  }
+  .hero::after {
+    content: '☀️';
+    position: absolute;
+    font-size: 6rem;
+    opacity: 0.1;
+    bottom: -0.5rem; right: 0.5rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+  .hero p {
+    font-size: 1.15rem;
+    opacity: 0.95;
+    font-weight: 300;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .hero .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.7;
+    margin-top: 1rem;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .intro {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 2.5rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-light);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--olive-dark);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .rooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .room-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .room-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .room-card.selected { border-color: var(--lavender); background: #f9f5fc; }
+  .room-card .room-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+  }
+  .room-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.35rem; }
+  .room-card p { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; }
+  .room-card .capacity { font-size: 0.8rem; color: var(--olive); font-weight: 500; margin-top: 0.5rem; }
+
+  .calendar-section { margin-bottom: 2.5rem; }
+  .calendar {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .cal-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--olive-dark);
+  }
+  .cal-nav {
+    background: none;
+    border: 2px solid var(--sand);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .cal-nav:hover { background: var(--sand); }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+  }
+  .cal-day-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    padding: 0.4rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 400;
+    position: relative;
+  }
+  .cal-day:hover:not(.empty):not(.past):not(.taken):not(.selected):not(.in-range) { background: var(--lavender-light); }
+  .cal-day.empty { cursor: default; }
+  .cal-day.past { color: #ccc; cursor: default; }
+  .cal-day.taken { background: var(--taken); color: var(--lavender); font-weight: 500; cursor: not-allowed; }
+  .cal-day.selected { background: var(--lavender); color: white; font-weight: 600; }
+  .cal-day.in-range { background: var(--lavender-light); color: var(--text); font-weight: 500; }
+  .cal-day.today { box-shadow: inset 0 0 0 2px var(--golden); }
+
+  .cal-dots {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    position: absolute;
+    bottom: 3px;
+    left: 0;
+    right: 0;
+  }
+  .cal-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .date-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 0.75rem;
+  }
+  .selected-dates {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--olive-dark);
+    font-weight: 500;
+    margin-top: 0.75rem;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .form-section {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 2.5rem;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--text-light);
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 0.7rem 1rem;
+    border: 2px solid var(--sand);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--warm);
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--lavender);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--lavender), var(--olive));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.02em;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,111,174,0.35); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .bookings-section { margin-bottom: 2rem; }
+  .booking-item {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .booking-info h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .booking-info p { font-size: 0.82rem; color: var(--text-light); }
+  .booking-room {
+    background: var(--sand);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--olive-dark);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    color: var(--text-light);
+  }
+  .footer a { color: var(--lavender); text-decoration: none; }
+
+  /* Photo gallery */
+  .gallery-section { margin-bottom: 2.5rem; }
+  .gallery {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    aspect-ratio: 16/9;
+    background: #222;
+  }
+  .gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s;
+  }
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.85);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 2;
+  }
+  .gallery-nav:hover { background: white; }
+  .gallery-nav.prev { left: 0.75rem; }
+  .gallery-nav.next { right: 0.75rem; }
+  .gallery-counter {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 0.25rem 0.65rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    z-index: 2;
+  }
+
+  .property-details {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .property-details h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--olive-dark);
+    margin-bottom: 0.75rem;
+  }
+  .property-details p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+  }
+  .property-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin: 1.25rem 0;
+  }
+  .property-stat {
+    text-align: center;
+    flex: 1;
+    min-width: 80px;
+  }
+  .property-stat .val {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--olive-dark);
+  }
+  .property-stat .lbl {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.2rem;
+  }
+  .listing-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: var(--lavender);
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .listing-link:hover { text-decoration: underline; }
+
+  .lang-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    padding: 0.3rem 0.6rem;
+    color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+    z-index: 5;
+  }
+  .lang-toggle:hover { background: rgba(255,255,255,0.3); }
+
+  .loading {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body style="visibility:hidden"><script>
+(function() {
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('invite') !== '54e84a12-3204-4e0f-8450-4cfc2d5a14a3') {
+    document.documentElement.innerHTML = '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#faf6f0;color:#7a6e62"><div style="text-align:center"><h1>🔒</h1><p>This page requires an invite link.</p></div></body>';
+    throw new Error('no invite');
+  }
+})();
+</script>
+<script>document.body.style.visibility="visible";</script>
+
+<div class="hero">
+  <button class="lang-toggle" onclick="toggleLang()" id="lang-btn">🇪🇸 Español</button>
+  <h1 data-i18n="hero_title">Come Hang With Us! 🌿</h1>
+  <p data-i18n="hero_desc">We're renting a big house near Aix-en-Provence this spring and we want you to come stay. Pick a room, pick some dates, and we'll see you there!</p>
+  <div class="subtitle" data-i18n="hero_sub">April 10 – July 7, 2026 · Near Aix-en-Provence, south of France 🇫🇷</div>
+</div>
+
+<div class="container">
+
+  <div class="gallery-section">
+    <div class="gallery">
+      <img id="gallery-img" src="https://www.aixenprovence-sothebysrealty.com/datas/biens/images/1379/diapo_medium/1379_00-2025-11-27-0142.jpg" alt="The house">
+      <button class="gallery-nav prev" onclick="galleryNav(-1)">‹</button>
+      <button class="gallery-nav next" onclick="galleryNav(1)">›</button>
+      <div class="gallery-counter" id="gallery-counter">1 / 20</div>
+    </div>
+  </div>
+
+  <div class="property-details">
+    <h2 data-i18n="house_title">The House 🏡</h2>
+    <p data-i18n="house_desc1">A renovated 19th-century bastide, 10 minutes north of Aix-en-Provence in Couteron. It's surrounded by an 8,000m² wooded park with century-old plane trees, olive trees, and a fountain. There's a 15m pool with views of Sainte-Victoire. Basically, it's ridiculously nice.</p>
+    <div class="property-stats">
+      <div class="property-stat"><div class="val">6</div><div class="lbl" data-i18n="stat_bed">Bedrooms</div></div>
+      <div class="property-stat"><div class="val">6</div><div class="lbl" data-i18n="stat_bath">Bathrooms</div></div>
+      <div class="property-stat"><div class="val">450m²</div><div class="lbl" data-i18n="stat_area">Living Space</div></div>
+      <div class="property-stat"><div class="val">🏊</div><div class="lbl" data-i18n="stat_pool">15m Pool</div></div>
+      <div class="property-stat"><div class="val">⛰️</div><div class="lbl" data-i18n="stat_views">Sainte-Victoire Views</div></div>
+    </div>
+    <p data-i18n="house_desc2">Ground floor has a big living room with fireplace, dining room, equipped kitchen opening onto a terrace, plus two bedroom suites. Upstairs: four more suites, a playroom for the kids, and a huge terrace. There's even a staff/guest wing with its own kitchen.</p>
+    <p data-i18n="house_overflow">If we get a full house, there's also a 4-bedroom guesthouse nearby we can rent for overflow — so don't be shy! 😄</p>
+    <a class="listing-link" href="https://www.aixenprovence-sothebysrealty.com/en/our-properties/ref-vp5-668/rental-house-aix-en-provence-15-rooms-6-bedrooms-13100/" target="_blank" data-i18n="listing_link">See the full listing →</a>
+  </div>
+
+  <div class="intro" data-i18n="intro">
+    We've got plenty of space and the kids would love to see you. The area is gorgeous — vineyards, hilltop villages, markets, the Mediterranean is 30 min away. Just claim your dates below so we don't accidentally overbook. 😄
+  </div>
+
+  <h2 class="section-title" data-i18n="pick_room">Pick a Room</h2>
+  <div class="rooms">
+    <div class="room-card" data-room="lavande" onclick="selectRoom(this)">
+      <div class="icon">🌿</div>
+      <h3 data-i18n="room1_name">Upstairs Suite</h3>
+      <p data-i18n="room1_desc">One of four suites on the first floor — private bathroom, hardwood floors, and access to a huge terrace with views. There's also a playroom up here for the kids.</p>
+      <div class="capacity" data-i18n="room1_cap">Fits 2 people</div>
+    </div>
+    <div class="room-card" data-room="olivier" onclick="selectRoom(this)">
+      <div class="icon">🫒</div>
+      <h3 data-i18n="room2_name">Ground Floor Suite</h3>
+      <p data-i18n="room2_desc">One of two suites downstairs — private bathroom, dressing room, and direct access to the garden and pool. Roll out of bed and into the sun.</p>
+      <div class="capacity" data-i18n="room2_cap">Fits 2–3 people</div>
+    </div>
+    <div class="room-card" data-room="mas" onclick="selectRoom(this)">
+      <div class="icon">🏡</div>
+      <h3 data-i18n="room3_name">Guest Wing</h3>
+      <p data-i18n="room3_desc">A separate area with its own kitchen, living space, bedroom, and bathroom. Basically your own little apartment — perfect for families or if you want privacy.</p>
+      <div class="capacity" data-i18n="room3_cap">Fits up to 4 people</div>
+    </div>
+  </div>
+
+  <div class="calendar-section">
+    <h2 class="section-title" data-i18n="when_coming">When Are You Coming?</h2>
+    <div class="calendar">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <h3 id="cal-month-label"></h3>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="date-hint" id="date-hint">Tap your arrival date, then your departure date</div>
+      <div class="selected-dates" id="selected-dates"></div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#8b6fae"></span> Upstairs</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#6b7c4e"></span> Ground Floor</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#c4704b"></span> Guest Wing</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--lavender)"></span> Your pick</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title" data-i18n="thats_you">That's You!</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="name" data-i18n="label_name">Your Name</label>
+        <input type="text" id="name" placeholder="e.g. The Johnsons" data-i18n-ph="ph_name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="guests" data-i18n="label_guests">How Many of You?</label>
+        <select id="guests">
+          <option value="1" data-i18n="guest_1">Just me</option>
+          <option value="2" selected data-i18n="guest_2">2 of us</option>
+          <option value="3" data-i18n="guest_3">3 of us</option>
+          <option value="4" data-i18n="guest_4">4 of us</option>
+          <option value="5" data-i18n="guest_5">5+ (we'll figure it out)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <div style="font-size:0.82rem;color:var(--text-light);padding-top:0.5rem">
+          <span data-i18n="confirm_note">We'll see your signup and reach out! 💌</span>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label for="notes" data-i18n="label_notes">Anything Else? <span style="font-weight:300">(optional)</span></label>
+        <textarea id="notes" placeholder="Dietary stuff, travel plans, kids' ages, if you need a crib, whatever..." data-i18n-ph="ph_notes"></textarea>
+      </div>
+    </div>
+    <button class="btn" id="submit-btn" onclick="submitBooking()" disabled>Count Me In! 🎉</button>
+  </div>
+
+  <div class="bookings-section">
+    <h2 class="section-title" data-i18n="whos_coming">Who's Coming</h2>
+    <div id="bookings-list">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Made with 💜 by Spencer, Eva &amp; <a href="https://openclaw.ai">Calder</a> 🗜️<br>
+  <span data-i18n="footer_q">Questions? Just text us!</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// --- i18n ---
+let currentLang = localStorage.getItem('provence-lang') || 'en';
+const I18N = {
+  es: {
+    hero_title: '¡Venid a Vernos! 🌿',
+    hero_desc: 'Hemos alquilado una casa enorme cerca de Aix-en-Provence esta primavera y queremos que vengáis. Elegid una habitación, elegid unas fechas, ¡y nos vemos allí!',
+    hero_sub: '10 de abril – 7 de julio, 2026 · Cerca de Aix-en-Provence, sur de Francia 🇫🇷',
+    house_title: 'La Casa 🏡',
+    house_desc1: 'Una bastida renovada del siglo XIX, a 10 minutos al norte de Aix-en-Provence en Couteron. Está rodeada de un parque arbolado de 8.000m² con plátanos centenarios, olivos y una fuente. Tiene una piscina de 15m con vistas a la Sainte-Victoire. Básicamente, es increíble.',
+    stat_bed: 'Dormitorios', stat_bath: 'Baños', stat_area: 'Espacio', stat_pool: 'Piscina 15m', stat_views: 'Vistas Sainte-Victoire',
+    house_desc2: 'La planta baja tiene un gran salón con chimenea, comedor, cocina equipada que da a una terraza, y dos suites. Arriba: cuatro suites más, una sala de juegos para los niños y una terraza enorme. Incluso hay un ala de invitados con su propia cocina.',
+    house_overflow: 'Si llenamos la casa, también podemos alquilar una casa de huéspedes de 4 habitaciones cerca — ¡así que no seáis tímidos! 😄',
+    listing_link: 'Ver el anuncio completo →',
+    intro: 'Tenemos mucho espacio y a los niños les encantaría veros. La zona es preciosa — viñedos, pueblos en lo alto de colinas, mercados, el Mediterráneo está a 30 min. Solo reservad vuestras fechas para que no haya overbooking. 😄',
+    pick_room: 'Elegid Habitación',
+    room1_name: 'Suite de Arriba', room1_desc: 'Una de cuatro suites en la primera planta — baño privado, suelos de madera y acceso a una terraza enorme con vistas. También hay una sala de juegos para los niños.', room1_cap: 'Para 2 personas',
+    room2_name: 'Suite Planta Baja', room2_desc: 'Una de dos suites abajo — baño privado, vestidor y acceso directo al jardín y la piscina. Salid de la cama y directos al sol.', room2_cap: 'Para 2–3 personas',
+    room3_name: 'Ala de Invitados', room3_desc: 'Un espacio separado con cocina propia, sala de estar, dormitorio y baño. Básicamente vuestro propio apartamento — perfecto para familias o si queréis privacidad.', room3_cap: 'Hasta 4 personas',
+    when_coming: '¿Cuándo Venís?',
+    thats_you: '¡Vuestros Datos!',
+    label_name: 'Vuestro Nombre', ph_name: 'ej. Los García',
+    label_guests: '¿Cuántos Sois?',
+    guest_1: 'Solo yo', guest_2: '2', guest_3: '3', guest_4: '4', guest_5: '5+ (ya nos organizamos)',
+    confirm_note: '¡Veremos vuestra reserva y os contactaremos! 💌',
+    label_notes: 'Algo Más? <span style="font-weight:300">(opcional)</span>',
+    ph_notes: 'Dietas, planes de viaje, edades de los niños, si necesitáis cuna, lo que sea...',
+    whos_coming: 'Quién Viene',
+    footer_q: '¿Preguntas? ¡Escribidnos!',
+    btn_pick_room: 'Elegid habitación primero ☝️',
+    btn_pick_dates: 'Ahora elegid fechas 📅',
+    btn_submit: '¡Me Apunto! 🎉',
+    btn_saving: 'Guardando...',
+    toast_name: '¿Cómo os llamáis? 😊',
+    toast_done: '¡Hecho! Os contactaremos 🥳',
+    empty_bookings: 'Nadie se ha apuntado aún — ¡sed los primeros! 🌿',
+    hint_start: 'Tocad la fecha de llegada, luego la de salida',
+    hint_end: 'Ahora tocad cuándo os vais',
+    hint_reset: 'Tocad una fecha para empezar de nuevo',
+  }
+};
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('provence-lang', lang);
+  document.getElementById('lang-btn').textContent = lang === 'en' ? '🇪🇸 Español' : '🇬🇧 English';
+  if (lang === 'en') {
+    // Reset to original HTML text (stored in data-i18n-orig)
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (el.dataset.i18nOrig) el.innerHTML = el.dataset.i18nOrig;
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      if (el.dataset.i18nPhOrig) el.placeholder = el.dataset.i18nPhOrig;
+    });
+  } else {
+    const t = I18N[lang];
+    if (!t) return;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (!el.dataset.i18nOrig) el.dataset.i18nOrig = el.innerHTML;
+      const key = el.dataset.i18n;
+      if (t[key]) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      if (!el.dataset.i18nPhOrig) el.dataset.i18nPhOrig = el.placeholder;
+      const key = el.dataset.i18nPh;
+      if (t[key]) el.placeholder = t[key];
+    });
+  }
+  updateSubmit();
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'en' ? 'es' : 'en');
+}
+
+// --- Photo Gallery ---
+const PHOTOS = [
+  '00-2025-11-27-0142','01-2025-11-27-0142','02-2025-11-27-0142','03-2025-11-27-0142',
+  '04-2025-11-27-0142','05-2025-11-27-0142','06-2025-11-27-0142','07-2025-11-27-0142',
+  '08-2025-11-27-0142','09-2025-11-27-0143','10-2025-11-27-0143','11-2025-11-27-0143',
+  '12-2025-11-27-0143','13-2025-11-27-0143','14-2025-11-27-0143','15-2025-11-27-0143',
+  '16-2025-11-27-0143','17-2025-11-27-0143','18-2025-11-27-0143','19-2025-11-27-0143'
+].map(id => `https://www.aixenprovence-sothebysrealty.com/datas/biens/images/1379/diapo_medium/1379_${id}.jpg`);
+let photoIdx = 0;
+function galleryNav(dir) {
+  photoIdx = (photoIdx + dir + PHOTOS.length) % PHOTOS.length;
+  document.getElementById('gallery-img').src = PHOTOS[photoIdx];
+  document.getElementById('gallery-counter').textContent = `${photoIdx + 1} / ${PHOTOS.length}`;
+}
+// Preload a few
+PHOTOS.slice(1, 4).forEach(src => { const i = new Image(); i.src = src; });
+
+const BLOB_URL = 'https://jsonblob.com/api/jsonBlob/019c6040-9d70-7be6-a0ce-8ba888cf50d0';
+const ROOMS = {
+  'lavande': 'Upstairs Suite',
+  'olivier': 'Ground Floor Suite',
+  'mas': 'Guest Wing'
+};
+
+let allBookings = [];
+let selectedRoom = null;
+let startDate = null;
+let endDate = null;
+let currentMonth = new Date(2026, 3); // April 2026
+const STAY_START = '2026-04-10';
+const STAY_END = '2026-07-07';
+
+// --- Storage (JSONBlob - free shared JSON) ---
+async function fetchBookings() {
+  try {
+    const res = await fetch(BLOB_URL);
+    if (res.ok) {
+      const data = await res.json();
+      allBookings = data.bookings || [];
+      return;
+    }
+  } catch {}
+  allBookings = JSON.parse(localStorage.getItem('provence-bookings') || '[]');
+}
+
+async function createBooking(booking) {
+  booking.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  booking.created = new Date().toISOString();
+  allBookings.push(booking);
+  // Save locally immediately so calendar updates
+  localStorage.setItem('provence-bookings', JSON.stringify(allBookings));
+  // Send to backend via ntfy (avoids CORS issues with JSONBlob PUT)
+  // Server-side script receives this and updates JSONBlob
+  try {
+    await fetch('https://ntfy.sh/ahrens-provence-001acbd3', {
+      method: 'POST',
+      body: JSON.stringify(booking)
+    });
+  } catch {}
+  return booking;
+}
+
+// --- UI ---
+function selectRoom(el) {
+  document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRoom = el.dataset.room;
+  renderCalendar();
+  updateSubmit();
+}
+
+function changeMonth(dir) {
+  currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir);
+  renderCalendar();
+}
+
+function dateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function parseDate(s) {
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function formatDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+const ROOM_COLORS = {
+  'lavande': '#8b6fae',
+  'olivier': '#6b7c4e',
+  'mas': '#c4704b'
+};
+
+// Returns Map<dateStr, [{room, name, color}]>
+function getBookedDates() {
+  const booked = new Map();
+  allBookings.forEach(b => {
+    let cur = parseDate(b.start);
+    const end = parseDate(b.end);
+    while (cur <= end) {
+      const ds = dateStr(cur);
+      if (!booked.has(ds)) booked.set(ds, []);
+      booked.get(ds).push({
+        room: b.room,
+        name: b.name.split(' ')[0],
+        color: ROOM_COLORS[b.room] || '#999'
+      });
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+  return booked;
+}
+
+function isDateTaken(ds, booked) {
+  if (!selectedRoom) return false;
+  const entries = booked.get(ds);
+  return entries && entries.some(e => e.room === selectedRoom);
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const label = document.getElementById('cal-month-label');
+  const y = currentMonth.getFullYear();
+  const m = currentMonth.getMonth();
+  label.textContent = new Date(y, m).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const booked = getBookedDates();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+
+  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    .map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(y, m, d);
+    const ds = dateStr(date);
+    let cls = 'cal-day';
+    const taken = isDateTaken(ds, booked);
+    if (date < today || ds < STAY_START || ds > STAY_END) cls += ' past';
+    else if (taken) cls += ' taken';
+    else if (startDate && endDate && ds >= dateStr(startDate) && ds <= dateStr(endDate)) {
+      cls += (ds === dateStr(startDate) || ds === dateStr(endDate)) ? ' selected' : ' in-range';
+    } else if (startDate && !endDate && ds === dateStr(startDate)) cls += ' selected';
+    if (ds === dateStr(today)) cls += ' today';
+
+    // Booking dots
+    const entries = booked.get(ds) || [];
+    const dots = entries.map(e =>
+      `<span class="cal-dot" style="background:${e.color}" title="${e.name} — ${ROOMS[e.room]}"></span>`
+    ).join('');
+
+    html += `<div class="${cls}" data-date="${ds}" onclick="pickDate('${ds}')"><span>${d}</span>${dots ? '<div class="cal-dots">'+dots+'</div>' : ''}</div>`;
+  }
+  grid.innerHTML = html;
+  updateDateDisplay();
+}
+
+function pickDate(ds) {
+  const date = parseDate(ds);
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (date < today || ds < STAY_START || ds > STAY_END) return;
+  const booked = getBookedDates();
+  if (isDateTaken(ds, booked)) return;
+
+  if (!startDate || (startDate && endDate)) {
+    startDate = date; endDate = null;
+  } else {
+    if (date < startDate) { startDate = date; }
+    else {
+      let cur = new Date(startDate);
+      let ok = true;
+      while (cur <= date) {
+        if (isDateTaken(dateStr(cur), booked)) { ok = false; break; }
+        cur.setDate(cur.getDate() + 1);
+      }
+      if (ok) endDate = date;
+      else { startDate = date; endDate = null; }
+    }
+  }
+  renderCalendar();
+  updateSubmit();
+}
+
+function updateDateDisplay() {
+  const el = document.getElementById('selected-dates');
+  const hint = document.getElementById('date-hint');
+  if (startDate && endDate) {
+    const nights = Math.round((endDate - startDate) / 86400000);
+    el.textContent = `${formatDate(startDate)} → ${formatDate(endDate)} (${nights} night${nights!==1?'s':''})`;
+    hint.textContent = 'Tap a date to start over';
+  } else if (startDate) {
+    el.textContent = `Arriving: ${formatDate(startDate)}`;
+    hint.textContent = 'Now tap when you\'re leaving';
+  } else {
+    el.textContent = '';
+    hint.textContent = 'Tap your arrival date, then your departure date';
+  }
+}
+
+function t(key, fallback) {
+  if (currentLang !== 'en' && I18N[currentLang]?.[key]) return I18N[currentLang][key];
+  return fallback;
+}
+
+function updateSubmit() {
+  const btn = document.getElementById('submit-btn');
+  const ready = selectedRoom && startDate && endDate;
+  btn.disabled = !ready;
+  if (!selectedRoom) btn.textContent = t('btn_pick_room', 'Pick a room first ☝️');
+  else if (!startDate || !endDate) btn.textContent = t('btn_pick_dates', 'Now pick your dates 📅');
+  else btn.textContent = t('btn_submit', 'Count Me In! 🎉');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+async function submitBooking() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const guests = document.getElementById('guests').value;
+  const notes = document.getElementById('notes').value.trim();
+
+  if (!name) { showToast(t('toast_name', 'What\'s your name? 😊')); return; }
+  if (!selectedRoom || !startDate || !endDate) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  await createBooking({
+    room: selectedRoom,
+    roomName: ROOMS[selectedRoom],
+    start: dateStr(startDate),
+    end: dateStr(endDate),
+    name, email, guests: Number(guests), notes
+  });
+
+  document.getElementById('name').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('guests').value = '2';
+  document.getElementById('notes').value = '';
+  startDate = null; endDate = null;
+  renderCalendar();
+  renderBookings();
+  updateSubmit();
+  btn.textContent = 'Count Me In! 🎉';
+  showToast(t('toast_done', 'You\'re in! We\'ll be in touch 🥳'));
+}
+
+function renderBookings() {
+  const list = document.getElementById('bookings-list');
+  const bookings = [...allBookings].sort((a,b) => a.start.localeCompare(b.start));
+  if (!bookings.length) {
+    list.innerHTML = `<div class="empty-state">${t('empty_bookings', 'No one\'s signed up yet — be the first! 🌿')}</div>`;
+    return;
+  }
+  list.innerHTML = bookings.map(b => {
+    const nights = Math.round((parseDate(b.end) - parseDate(b.start)) / 86400000);
+    return `<div class="booking-item">
+      <div class="booking-info">
+        <h4>${b.name} · ${b.guests} ${b.guests == 1 ? 'person' : 'people'}</h4>
+        <p>${formatDate(parseDate(b.start))} → ${formatDate(parseDate(b.end))} · ${nights} night${nights!==1?'s':''}</p>
+      </div>
+      <span class="booking-room">${b.roomName}</span>
+    </div>`;
+  }).join('');
+}
+
+// Remember user details
+function saveUserInfo() {
+  const info = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    guests: document.getElementById('guests').value
+  };
+  localStorage.setItem('provence-user', JSON.stringify(info));
+}
+function loadUserInfo() {
+  try {
+    const info = JSON.parse(localStorage.getItem('provence-user'));
+    if (info) {
+      if (info.name) document.getElementById('name').value = info.name;
+      if (info.email) document.getElementById('email').value = info.email;
+      if (info.guests) document.getElementById('guests').value = info.guests;
+    }
+  } catch {}
+}
+// Save on input
+['name','email','guests'].forEach(id =>
+  document.getElementById(id).addEventListener('input', saveUserInfo));
+
+// Init
+(async () => {
+  loadUserInfo();
+  await fetchBookings();
+  renderCalendar();
+  renderBookings();
+  if (currentLang !== 'en') applyLang(currentLang);
+})();
+</script>
+</body>
+</html>
