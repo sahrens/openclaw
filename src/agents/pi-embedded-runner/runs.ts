@@ -24,14 +24,10 @@ export function queueEmbeddedPiMessage(sessionId: string, text: string): boolean
     diag.debug(`queue message failed: sessionId=${sessionId} reason=no_active_run`);
     return false;
   }
-  if (!handle.isStreaming()) {
-    diag.debug(`queue message failed: sessionId=${sessionId} reason=not_streaming`);
-    return false;
-  }
-  if (handle.isCompacting()) {
-    diag.debug(`queue message failed: sessionId=${sessionId} reason=compacting`);
-    return false;
-  }
+  // steer() on the agent-core Agent class is just a queue push
+  // (steeringQueue.push(m)) — safe to call regardless of streaming or
+  // compaction state.  The agent loop will pick up the message on the
+  // next getSteeringMessages poll between tool executions.
   logMessageQueued({ sessionId, source: "pi-embedded-runner" });
   void handle.queueMessage(text);
   return true;
