@@ -14,6 +14,10 @@ import {
   isSubagentSessionKey,
   normalizeAgentId,
 } from "../../../routing/session-key.js";
+import {
+  formatConstitutionAuditLog,
+  validateConstitution,
+} from "../../../security/constitution.js";
 import { resolveSignalReactionLevel } from "../../../signal/reaction-level.js";
 import { resolveTelegramInlineButtonsScope } from "../../../telegram/inline-buttons.js";
 import { resolveTelegramReactionLevel } from "../../../telegram/reaction-level.js";
@@ -486,6 +490,26 @@ export async function runEmbeddedAttempt(
     });
     const systemPromptOverride = createSystemPromptOverride(appendPrompt);
     const systemPromptText = systemPromptOverride();
+
+    // Constitution Guardian: validate system prompt before any LLM interaction.
+    // This is a deterministic (non-LLM) check that cannot be prompt-injected around.
+    const constitutionConfig = params.config?.agents?.defaults?.constitution;
+    const constitutionResult = validateConstitution(systemPromptText, constitutionConfig);
+    log.info(
+      formatConstitutionAuditLog(constitutionResult, {
+        sessionId: params.sessionId,
+        sessionKey: params.sessionKey,
+        agentId: params.agentId,
+      }),
+    );
+    if (!constitutionResult.pass) {
+      const violationSummary = constitutionResult.violations
+        .map((v) => `[${v.severity}] ${v.ruleId}: ${v.message}`)
+        .join("; ");
+      throw new Error(
+        `Constitution check failed — blocking agent run. Violations: ${violationSummary}`,
+      );
+    }
 
     const sessionLock = await acquireSessionWriteLock({
       sessionFile: params.sessionFile,
