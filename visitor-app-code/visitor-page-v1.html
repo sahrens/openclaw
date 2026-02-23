@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visit the Ahrens in Provence — Spring/Summer 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --warm: #faf6f0;
+    --sand: #e8ddd0;
+    --lavender: #8b6fae;
+    --lavender-light: #c4b1d9;
+    --olive: #6b7c4e;
+    --olive-dark: #4a5a33;
+    --terracotta: #c4704b;
+    --golden: #d4a843;
+    --ochre: #c9952e;
+    --text: #3b3228;
+    --text-light: #7a6e62;
+    --white: #fffcf8;
+    --taken: #e2cfe8;
+    --available: #dce8cd;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--warm);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, var(--olive-dark) 0%, var(--olive) 40%, var(--lavender) 100%);
+    color: var(--white);
+    text-align: center;
+    padding: 4rem 1.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '🌿';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.1;
+    top: -1rem; left: -1rem;
+  }
+  .hero::after {
+    content: '💜';
+    position: absolute;
+    font-size: 6rem;
+    opacity: 0.1;
+    bottom: -0.5rem; right: 0.5rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+  .hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .hero .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.7;
+    margin-top: 0.75rem;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--olive-dark);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .rooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .room-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .room-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .room-card.selected { border-color: var(--lavender); background: #f9f5fc; }
+  .room-card .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .room-card h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.35rem; }
+  .room-card p { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; }
+  .room-card .capacity { font-size: 0.8rem; color: var(--olive); font-weight: 500; margin-top: 0.5rem; }
+
+  .calendar-section { margin-bottom: 2.5rem; }
+  .calendar {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .cal-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--olive-dark);
+  }
+  .cal-nav {
+    background: none;
+    border: 2px solid var(--sand);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .cal-nav:hover { background: var(--sand); }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+  }
+  .cal-day-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    padding: 0.4rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 400;
+  }
+  .cal-day:hover:not(.empty):not(.past):not(.taken) { background: var(--available); }
+  .cal-day.empty { cursor: default; }
+  .cal-day.past { color: #ccc; cursor: default; }
+  .cal-day.taken { background: var(--taken); color: var(--lavender); font-weight: 500; cursor: not-allowed; }
+  .cal-day.selected { background: var(--olive-dark); color: white; font-weight: 600; }
+  .cal-day.in-range { background: #dce8cd; color: var(--olive-dark); }
+  .cal-day.today { box-shadow: inset 0 0 0 2px var(--golden); }
+
+  .date-hint {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 0.75rem;
+  }
+  .selected-dates {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--olive-dark);
+    font-weight: 500;
+    margin-top: 0.75rem;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .form-section {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 2.5rem;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--text-light);
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 0.7rem 1rem;
+    border: 2px solid var(--sand);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--warm);
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--lavender);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--lavender), var(--olive));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.02em;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,111,174,0.35); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .bookings-section { margin-bottom: 2rem; }
+  .booking-item {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .booking-info h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .booking-info p { font-size: 0.82rem; color: var(--text-light); }
+  .booking-room {
+    background: var(--sand);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .booking-delete {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.1rem; opacity: 0.4; transition: opacity 0.2s;
+  }
+  .booking-delete:hover { opacity: 1; }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--olive-dark);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    color: var(--text-light);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🌿 Chez Ahrens — Provence</h1>
+  <p>Spencer &amp; Eva are renting a big house near Aix-en-Provence this spring. Come visit — there's room for you!</p>
+  <div class="subtitle">April – July 2026 · Near Eguilles, Aix-en-Provence, France</div>
+</div>
+
+<div class="container">
+
+  <h2 class="section-title">Choose Your Room</h2>
+  <div class="rooms">
+    <div class="room-card" data-room="lavande" onclick="selectRoom(this)">
+      <div class="icon">💜</div>
+      <h3>Lavande</h3>
+      <p>Bright upstairs room with views of the garden. Morning sun and lavender breeze.</p>
+      <div class="capacity">Sleeps 2 guests</div>
+    </div>
+    <div class="room-card" data-room="olivier" onclick="selectRoom(this)">
+      <div class="icon">🫒</div>
+      <h3>L'Olivier</h3>
+      <p>Spacious ground-floor suite overlooking the olive grove. Private entrance.</p>
+      <div class="capacity">Sleeps 2–3 guests</div>
+    </div>
+    <div class="room-card" data-room="mas" onclick="selectRoom(this)">
+      <div class="icon">🏠</div>
+      <h3>Le Mas</h3>
+      <p>The full guest wing — bedroom, sitting area, and ensuite. Perfect for families.</p>
+      <div class="capacity">Sleeps 4 guests</div>
+    </div>
+  </div>
+
+  <div class="calendar-section">
+    <h2 class="section-title">Pick Your Dates</h2>
+    <div class="calendar">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <h3 id="cal-month-label"></h3>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="date-hint" id="date-hint">Click to select check-in, then check-out</div>
+      <div class="selected-dates" id="selected-dates"></div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--available)"></span> Available</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--taken)"></span> Booked</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--olive-dark)"></span> Your selection</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2 class="section-title">Your Details</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="guests">Number of Guests</label>
+        <select id="guests">
+          <option value="1">1 guest</option>
+          <option value="2" selected>2 guests</option>
+          <option value="3">3 guests</option>
+          <option value="4">4 guests</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <div style="font-size:0.82rem;color:var(--text-light);padding-top:0.5rem">
+          We'll confirm your visit via email ✉️
+        </div>
+      </div>
+      <div class="form-group full">
+        <label for="notes">Notes <span style="font-weight:300">(optional)</span></label>
+        <textarea id="notes" placeholder="Dietary needs, travel plans, kids coming along, anything we should know..."></textarea>
+      </div>
+    </div>
+    <button class="btn" id="submit-btn" onclick="submitBooking()" disabled>Reserve Your Stay</button>
+  </div>
+
+  <div class="bookings-section">
+    <h2 class="section-title">Upcoming Visits</h2>
+    <div id="bookings-list">
+      <div class="empty-state">No visits booked yet — be the first! 🌿</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Made with 💜 · Chez Ahrens · Provence, France
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ROOMS = {
+  'lavande': 'Lavande',
+  'olivier': "L'Olivier",
+  'mas': 'Le Mas'
+};
+
+let selectedRoom = null;
+let startDate = null;
+let endDate = null;
+let currentMonth = new Date(2026, 3); // April 2026
+
+function getBookings() {
+  return JSON.parse(localStorage.getItem('provence-bookings') || '[]');
+}
+function saveBookings(b) {
+  localStorage.setItem('provence-bookings', JSON.stringify(b));
+}
+
+function selectRoom(el) {
+  document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRoom = el.dataset.room;
+  renderCalendar();
+  updateSubmit();
+}
+
+function changeMonth(dir) {
+  currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + dir);
+  renderCalendar();
+}
+
+function dateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function parseDate(s) {
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function formatDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function getTakenDates() {
+  if (!selectedRoom) return new Set();
+  const bookings = getBookings().filter(b => b.room === selectedRoom);
+  const taken = new Set();
+  bookings.forEach(b => {
+    let cur = parseDate(b.start);
+    const end = parseDate(b.end);
+    while (cur <= end) {
+      taken.add(dateStr(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+  return taken;
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const label = document.getElementById('cal-month-label');
+  const y = currentMonth.getFullYear();
+  const m = currentMonth.getMonth();
+  label.textContent = new Date(y, m).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const taken = getTakenDates();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+
+  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    .map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(y, m, d);
+    const ds = dateStr(date);
+    let cls = 'cal-day';
+    if (date < today) cls += ' past';
+    else if (taken.has(ds)) cls += ' taken';
+    else if (startDate && endDate && ds >= dateStr(startDate) && ds <= dateStr(endDate)) {
+      cls += (ds === dateStr(startDate) || ds === dateStr(endDate)) ? ' selected' : ' in-range';
+    } else if (startDate && !endDate && ds === dateStr(startDate)) cls += ' selected';
+    if (ds === dateStr(today)) cls += ' today';
+    html += `<div class="${cls}" data-date="${ds}" onclick="pickDate('${ds}')">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  updateDateDisplay();
+}
+
+function pickDate(ds) {
+  const date = parseDate(ds);
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (date < today) return;
+  const taken = getTakenDates();
+  if (taken.has(ds)) return;
+
+  if (!startDate || (startDate && endDate)) {
+    startDate = date; endDate = null;
+  } else {
+    if (date < startDate) { startDate = date; }
+    else {
+      let cur = new Date(startDate);
+      let ok = true;
+      while (cur <= date) {
+        if (taken.has(dateStr(cur))) { ok = false; break; }
+        cur.setDate(cur.getDate() + 1);
+      }
+      if (ok) endDate = date;
+      else { startDate = date; endDate = null; }
+    }
+  }
+  renderCalendar();
+  updateSubmit();
+}
+
+function updateDateDisplay() {
+  const el = document.getElementById('selected-dates');
+  const hint = document.getElementById('date-hint');
+  if (startDate && endDate) {
+    const nights = Math.round((endDate - startDate) / 86400000);
+    el.textContent = `${formatDate(startDate)} → ${formatDate(endDate)} (${nights} night${nights!==1?'s':''})`;
+    hint.textContent = 'Click a date to start over';
+  } else if (startDate) {
+    el.textContent = `Check-in: ${formatDate(startDate)}`;
+    hint.textContent = 'Now click your check-out date';
+  } else {
+    el.textContent = '';
+    hint.textContent = 'Click to select check-in, then check-out';
+  }
+}
+
+function updateSubmit() {
+  document.getElementById('submit-btn').disabled = !(selectedRoom && startDate && endDate);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function submitBooking() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const guests = document.getElementById('guests').value;
+  const notes = document.getElementById('notes').value.trim();
+
+  if (!name || !email) { showToast('Please enter your name and email'); return; }
+  if (!selectedRoom || !startDate || !endDate) return;
+
+  const booking = {
+    id: Date.now().toString(36),
+    room: selectedRoom,
+    roomName: ROOMS[selectedRoom],
+    start: dateStr(startDate),
+    end: dateStr(endDate),
+    name, email, guests: Number(guests), notes,
+    created: new Date().toISOString()
+  };
+
+  const bookings = getBookings();
+  bookings.push(booking);
+  saveBookings(bookings);
+
+  document.getElementById('name').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('guests').value = '2';
+  document.getElementById('notes').value = '';
+  startDate = null; endDate = null;
+  renderCalendar();
+  renderBookings();
+  updateSubmit();
+  showToast('🌿 You\'re booked! We\'ll confirm by email.');
+}
+
+function deleteBooking(id) {
+  if (!confirm('Remove this booking?')) return;
+  saveBookings(getBookings().filter(b => b.id !== id));
+  renderCalendar();
+  renderBookings();
+}
+
+function renderBookings() {
+  const list = document.getElementById('bookings-list');
+  const bookings = getBookings().sort((a,b) => a.start.localeCompare(b.start));
+  if (!bookings.length) {
+    list.innerHTML = '<div class="empty-state">No visits booked yet — be the first! 🌿</div>';
+    return;
+  }
+  list.innerHTML = bookings.map(b => {
+    const nights = Math.round((parseDate(b.end) - parseDate(b.start)) / 86400000);
+    return `<div class="booking-item">
+      <div class="booking-info">
+        <h4>${b.name} · ${b.guests} guest${b.guests!==1?'s':''}</h4>
+        <p>${formatDate(parseDate(b.start))} → ${formatDate(parseDate(b.end))} · ${nights} night${nights!==1?'s':''}</p>
+      </div>
+      <span class="booking-room">${b.roomName}</span>
+      <button class="booking-delete" onclick="deleteBooking('${b.id}')" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+renderCalendar();
+renderBookings();
+</script>
+</body>
+</html>
