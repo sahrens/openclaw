@@ -1,5 +1,20 @@
 /** Distance (px) from the bottom within which we consider the user "near bottom". */
-const NEAR_BOTTOM_THRESHOLD = 450;
+// Balance: too large = yanks user while reading; too small = pill appears when user is basically at bottom.
+// 150px is roughly 2-3 lines of text, giving some buffer without being overly aggressive.
+const NEAR_BOTTOM_THRESHOLD = 150;
+
+// Minimum scroll-up distance (px) to count as intentional "detach from bottom".
+// Small scroll jitter or content reflow shouldn't detach; only deliberate scrolls should.
+const SCROLL_UP_INTENT_THRESHOLD = 50;
+
+// Track scroll position to detect explicit user scroll-up intent.
+const lastChatScrollTop = new WeakMap<object, number>();
+function didUserScrollUpSignificantly(host: object, scrollTop: number) {
+  const prev = lastChatScrollTop.get(host);
+  lastChatScrollTop.set(host, scrollTop);
+  // Only treat as intentional scroll-up if user scrolled up by a meaningful amount
+  return typeof prev === "number" && (prev - scrollTop) > SCROLL_UP_INTENT_THRESHOLD;
+}
 
 type ScrollHost = {
   updateComplete: Promise<unknown>;
@@ -25,16 +40,11 @@ export function scheduleChatScroll(host: ScrollHost, force = false, smooth = fal
   }
   const pickScrollTarget = () => {
     const container = host.querySelector(".chat-thread") as HTMLElement | null;
-    if (container) {
-      const overflowY = getComputedStyle(container).overflowY;
-      const canScroll =
-        overflowY === "auto" ||
-        overflowY === "scroll" ||
-        container.scrollHeight - container.clientHeight > 1;
-      if (canScroll) {
-        return container;
-      }
-    }
+    // Always prefer the chat thread container when present.
+    // Rationale: some layouts scroll the thread even when overflowY isn't "auto"/"scroll",
+    // and falling back to document.scrollingElement can incorrectly think we're at bottom
+    // and yank the user's position during streaming.
+    if (container) return container;
     return (document.scrollingElement ?? document.documentElement) as HTMLElement | null;
   };
   // Wait for Lit render to complete, then scroll
@@ -47,11 +57,15 @@ export function scheduleChatScroll(host: ScrollHost, force = false, smooth = fal
       }
       const distanceFromBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
 
+      // If the user deliberately scrolled up (not just minor jitter), treat as "do not stick".
+      const userScrolledUp = didUserScrollUpSignificantly(host, target.scrollTop);
+
       // force=true only overrides when we haven't auto-scrolled yet (initial load).
       // After initial load, respect the user's scroll position.
       const effectiveForce = force && !host.chatHasAutoScrolled;
-      const shouldStick =
-        effectiveForce || host.chatUserNearBottom || distanceFromBottom < NEAR_BOTTOM_THRESHOLD;
+      host.chatUserNearBottom = distanceFromBottom < NEAR_BOTTOM_THRESHOLD;
+
+      const shouldStick = effectiveForce || (host.chatUserNearBottom && !userScrolledUp);
 
       if (!shouldStick) {
         // User is scrolled up — flag that new content arrived below.
@@ -83,10 +97,9 @@ export function scheduleChatScroll(host: ScrollHost, force = false, smooth = fal
         }
         const latestDistanceFromBottom =
           latest.scrollHeight - latest.scrollTop - latest.clientHeight;
-        const shouldStickRetry =
-          effectiveForce ||
-          host.chatUserNearBottom ||
-          latestDistanceFromBottom < NEAR_BOTTOM_THRESHOLD;
+        const userScrolledUpRetry = didUserScrollUpSignificantly(host, latest.scrollTop);
+        host.chatUserNearBottom = latestDistanceFromBottom < NEAR_BOTTOM_THRESHOLD;
+        const shouldStickRetry = effectiveForce || (host.chatUserNearBottom && !userScrolledUpRetry);
         if (!shouldStickRetry) {
           return;
         }
@@ -124,6 +137,7 @@ export function handleChatScroll(host: ScrollHost, event: Event) {
   if (!container) {
     return;
   }
+  lastChatScrollTop.set(host, container.scrollTop);
   const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
   host.chatUserNearBottom = distanceFromBottom < NEAR_BOTTOM_THRESHOLD;
   // Clear the "new messages below" indicator when user scrolls back to bottom.
