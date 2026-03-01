@@ -47,7 +47,7 @@ Welcome to the lobster tank! 🦞
 ## How to Contribute
 
 1. **Bugs & small fixes** → Open a PR!
-2. **New features / architecture** → Start a [GitHub Discussion](https://github.com/openclaw/openclaw/discussions) or ask in Discord first
+2. **New features / architecture** → Start a [GitHub Discussion](https://github.com/openclaw/openclaw/discussions) or ask in Discord first.
 3. **Questions** → Discord #setup-help
 
 ## Before You PR
