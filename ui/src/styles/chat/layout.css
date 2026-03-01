@@ -138,6 +138,42 @@
   flex-shrink: 0;
 }
 
+/* Chat status strip - small, low-noise status chips */
+.chat-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 4px 10px;
+  margin-top: -4px;
+  margin-bottom: 6px;
+}
+
+.chat-status__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.chat-status__chip--good {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--text);
+}
+
+.chat-status__chip--warn {
+  border-color: color-mix(in srgb, #f59e0b 55%, var(--border));
+  color: var(--text);
+}
+
+.chat-status__chip--muted {
+  opacity: 0.9;
+}
+
 /* Chat compose - sticky at bottom */
 .chat-compose {
   position: sticky;
