@@ -105,6 +105,7 @@ export const AgentDefaultsSchema = z
       })
       .strict()
       .optional(),
+    quickAck: z.boolean().optional(),
     thinkingDefault: z
       .union([
         z.literal("off"),
